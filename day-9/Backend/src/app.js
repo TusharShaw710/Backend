@@ -4,10 +4,12 @@
 const express=require("express");
 const userModel=require("./models/user.model");
 const noteModel = require("./models/user.model");
+const cors=require("cors");
 
 const app=express();
 
 app.use(express.json());
+app.use(cors());
 
 //create note
 app.post("/api/notes",async(req,res)=>{
