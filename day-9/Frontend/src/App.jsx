@@ -28,14 +28,18 @@ function App() {
     })
     .then((res)=>{
       console.log(res.data);
+      fetchNotes();
     })
 
-    fetchNotes();
     
   }
 
   function handleDelete(noteId){
-
+      axios.delete("http://localhost:3000/api/notes/"+noteId)
+        .then(()=>{
+          console.log("Note is deleted successfully");
+          fetchNotes();
+        });
   }
  
 
@@ -50,10 +54,10 @@ function App() {
       <div className="notes">
         {
           notes.map((elem)=>(
-              <div className="note" key={elem.id}>
+              <div className="note" key={elem._id}>
                     <h2>{elem.title}</h2>
                     <p>{elem.description}</p>
-                    <button>delete</button>
+                    <button onClick={()=>handleDelete(elem._id)}>delete</button>
                 </div>           
           ))
         }
