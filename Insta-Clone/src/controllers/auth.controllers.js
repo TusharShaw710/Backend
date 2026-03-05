@@ -1,5 +1,6 @@
 const userModel=require("../models/user.model");
-const crypto=require("crypto");
+// const crypto=require("crypto");//low level security package
+const bcrypt=require("bcryptjs");
 const jwt=require("jsonwebtoken");
 require("dotenv").config();
 
@@ -19,7 +20,7 @@ async function registerController(req,res){
         })
     };
 
-    let hash=crypto.createHash("md5").update(password).digest("hex");
+    let hash=await bcrypt.hash(password,10);//10-salting-->Level of hashing!
     let user=await userModel.create({
         username,
         email,
@@ -66,9 +67,9 @@ async function loginController(req,res){
         })
     }
 
-    let hash=crypto.createHash("md5").update(password).digest("hex");
+    let isPassword=await bcrypt.compare(password,user.password);
 
-    if(hash !=user.password){
+    if(!isPassword){
         return res.status(401).json({
             message:"Incorrect Password"
         })
