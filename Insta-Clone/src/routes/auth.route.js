@@ -1,6 +1,6 @@
 const express=require("express");
 const authRouter=express.Router();
-const {loginController,registerController}=require("../controllers/auth.controllers");
+const {loginController,registerController}=require("../controllers/auth.controller");
 
 //post
 authRouter.post("/register",registerController);
