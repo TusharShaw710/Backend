@@ -3,17 +3,24 @@ const mongoose=require("mongoose");
 const followSchema=mongoose.Schema({
     follower:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:"users",
+        ref:"user",
         required:[true,"Follower is Required"]
     },
     followee:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:"users",
+        ref:"user",
         required:[true,"Followee is Required"]
+    },
+    status:{
+        type:String,
+        enum:["pending","accepted","rejected"],
+        default:"pending"
     }
 },{
     timestamps:true
 });
 
-const FollowModel=await mongoose.model("follow",followSchema);
+followSchema.index({follower:1,followee:1},{unique:true});
+
+const FollowModel=mongoose.model("follow",followSchema);
 module.exports=FollowModel;

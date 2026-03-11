@@ -13,7 +13,7 @@ app.use(cookieParser());
 
 /**Routes are used here */
 app.use("/api/auth",authRouter);
-app.use("/post/api",postRouter);
-app.use("/post/api",userRouter);
+app.use("/api/post",postRouter);
+app.use("/api/users",userRouter);
 
 module.exports=app;
