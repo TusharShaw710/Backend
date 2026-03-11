@@ -9,20 +9,11 @@ const imagekit=new ImageKit({
 });
 
 async function createPostController(req,res) {
-  console.log(req.body,req.file);
-  let token=req.cookies.token;
-  let decoded=null;
-  try{
-    decoded=jwt.verify(token,process.env.JWT_SECRET);
-  }catch(err){
-    res.status(401).json({
-      error:"Token is not authentic."
-    })
-  }
-  console.log(decoded);
-  let user=await userModel.findOne({_id:decoded.id});
+  
+  let user=await userModel.findOne({_id:req.user.id});
+
   if(!user){
-    return res.status(404).json({
+      return res.status(404).json({
       message:"User is not registered"
     })
   }
@@ -45,23 +36,9 @@ async function createPostController(req,res) {
 
 
 async function getPostController(req,res){
-  let token=req.cookies.token;
-  if(!token){
-    return res.status(401).json({
-      message:"Unauthorized Access"
-    })
-  }
-  let decoded=null;
 
-  try{
-    decoded=jwt.verify(token,process.env.JWT_SECRET);
-  }catch(err){
-    res.status(401).json({
-      error:"Token is not authentic"
-    });
-  }
 
-  let posts=await postModel.find({userId:decoded.id});
+  let posts=await postModel.find({userId:req.user.id});
 
   if(posts.length==0){
     res.status(404).json({
@@ -76,23 +53,9 @@ async function getPostController(req,res){
 }
 
 async function getPostDetailsController(req,res) {
-  let token=req.cookies.token;
-  if(!token){
-    return res.status(401).json({
-      message:"Unauthorized Access"
-    })
-  }
-  let decoded=null;
-
-  try{
-    decoded=jwt.verify(token,process.env.JWT_SECRET);
-  }catch(err){
-    res.status(401).json({
-      error:"Token is not authentic"
-    });
-  }
+  
   let postId=req.params.postId;
-  let userId=decoded.id;
+  let userId=req.user.id;
 
   let post=await postModel.findById(postId);
   let isUserValid=userId.toString()===post.userId.toString();
