@@ -5,6 +5,7 @@ const jwt=require("jsonwebtoken");
 
 
 
+
 async function registerController(req,res){
     let {username,email,password,bio,profileImage}=req.body;
 
@@ -86,10 +87,34 @@ async function loginController(req,res){
 
     res.status(200).json({
         message:"User has Logged In",
+        user:{
+            username:user.username,
+            email:user.email,
+            bio:user.bio,
+            profileImage:user.profileImage
+        }
     });
 
 }
 
+async function getmeController(req,res){
+    const userId=req.user.id;
+
+    const user=await userModel.findById(userId);
+
+    res.status(200).json({
+        user:{
+            id:user._id,
+            username:user.username,
+            email:user.email,
+            bio:user.bio,
+            profileImage:user.profileImage
+        }
+    })
+}
+
 module.exports={
-    registerController,loginController
+    registerController,
+    loginController,
+    getmeController
 }

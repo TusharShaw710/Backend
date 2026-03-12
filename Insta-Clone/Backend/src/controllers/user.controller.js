@@ -5,12 +5,6 @@ async function followRequestController(req,res){
     const FolloweeUsername=req.params.username;
     const follower=req.user;
 
-    if (!follower || !follower.id) {
-        return res.status(401).json({
-            message: "Unauthorized: invalid or missing token"
-        });
-    }
-
     if (!FolloweeUsername) {
         return res.status(400).json({
             message: "Missing followee username"
@@ -71,7 +65,7 @@ async function followReqAcceptController(req,res) {
 }
 
 async function followReqRejectController(req,res){
-     const username=req.params.username;
+    const username=req.params.username;
     const user=await userModel.findOne({username:username});
     const reqId=user._id;
 
