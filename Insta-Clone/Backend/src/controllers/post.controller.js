@@ -121,6 +121,21 @@ async function likePostController(req,res){
     })
 }
 
+async function getFeedController(req,res) {
+  const posts=await postModel.find({userId:req.user.id}).populate("userId");
+
+  if(!posts){
+    req.status(404).json({
+      message:"No post yet."
+    })
+  }
+  res.status(200).json({
+    message:"Posts are fetched successfully",
+    posts:posts
+  });
+  
+}
 
 
-module.exports={createPostController,getPostController,getPostDetailsController,likePostController};
+
+module.exports={createPostController,getPostController,getPostDetailsController,likePostController,getFeedController};

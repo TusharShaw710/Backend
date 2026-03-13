@@ -13,7 +13,7 @@ export async function register(username,email,password) {
             password
         });
 
-        return response.data
+        return response
 
     }catch(err){
         throw err
@@ -27,7 +27,7 @@ export async function login(username,password) {
             password
         });
 
-        return response.data
+        return response
 
     }catch(err){
         throw err
@@ -37,7 +37,7 @@ export async function login(username,password) {
 export async function getme(){
     try {
         const response=await api.get("/get-me");
-        return response.data;
+        return response;
         
     } catch (err) {
         throw err

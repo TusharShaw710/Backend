@@ -15,8 +15,8 @@ export function useAuth(){
             const response=await login(username,password)
             .then((res)=>{
                 console.log(res);
+                setuser(res.data.user);
             })
-            setuser(response.user);
 
         } catch (err) {
             console.log(err);
@@ -32,8 +32,8 @@ export function useAuth(){
            const response=await register(username,email,password)
            .then((res)=>{
                 console.log(res);
+                setuser(res.data.user);
            });
-           setuser(response.user);
 
         }catch(err){
             console.log(err);
@@ -44,7 +44,5 @@ export function useAuth(){
 
     return(
         {user,loading,handleLogin,handleRegister}
-    );
-
-    
+    );    
 }

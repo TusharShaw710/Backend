@@ -1,0 +1,87 @@
+
+.feed-page{
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 1.5rem;
+    margin-top: 16rem;
+    overflow: auto;
+    ::-webkit-scrollbar {
+        display: none;
+    }
+
+
+    .feed{
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        .posts{
+            height: 100%;
+            max-width: 400px;
+
+            .post{
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+                background-color: #121212;
+                padding-inline: 0.5rem;
+                padding-block: 0.8rem;
+                border-radius: 1.5rem;
+                .user{
+                    display: flex;
+                    gap: 0.5rem;
+                    align-items: center;
+                    .img-wrapper{
+                        border-radius: 50%;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        border: 3px solid transparent;
+                        background: conic-gradient(from 45deg,  #F58529,
+                                                                #FEDA77,
+                                                                #DD2A7B,
+                                                                #8134AF,
+                                                                #515BD4,
+                                                                #F58529) border-box;
+
+                    }
+                    img{
+                        width: 2rem;
+                        aspect-ratio: 1/1;
+                        border-radius: 50%;
+                    }
+                }
+                .image{
+                    img{
+                        max-width: 20rem;
+                        aspect-ratio: 1/1;
+                        border-radius: 1rem;
+                    }
+                }
+            }
+            .bottom{
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+                .icons{
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    
+                    .left{
+                        display: flex;
+                        gap: 0.5rem;
+                    }
+                    button{
+                        background-color: transparent;
+                        width: 1.5rem;
+                        border: none;
+                        color: white;
+                    }
+                }
+
+            }
+        }
+
+    }
+}
