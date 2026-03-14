@@ -91,12 +91,11 @@ async function likePostController(req,res){
       })
     }
 
-    if(post.userId.toString() === user.id){
-      return res.status(400).json({
-        message:"You cannot like your own post!"
-      })
-
-    }
+    // if(post.userId.toString() === user.id){
+    //   return res.status(400).json({
+    //     message:"You cannot like your own post!"
+    //   })
+    // }
 
     const isLiked=await likeModel.findOne({
       post:postId,
@@ -122,7 +121,24 @@ async function likePostController(req,res){
 }
 
 async function getFeedController(req,res) {
-  const posts=await postModel.find({userId:req.user.id}).populate("userId");
+  const posts=await Promise.all((await postModel.find({userId:req.user.id}).populate("userId").lean())
+    .map(async (post)=>{
+
+      /**
+       * as postModel returns mongoose object and we cannot modified or update mongoose object that's why we have to use lean() to convert it to javascript object so that we can modify
+       */
+    
+      const isLiked=await likeModel.findOne({
+        post:post._id,
+        user:post.userId._id
+      });
+
+      post.isLiked=Boolean(isLiked)
+
+      return post;
+    })
+  )
+  
 
   if(!posts){
     req.status(404).json({
