@@ -1,4 +1,5 @@
 const jwt=require("jsonwebtoken");
+const redis=require("../config/cache");
 
 async function identifyToken(req,res,next) {
     const token=req.cookies.token;
@@ -8,9 +9,7 @@ async function identifyToken(req,res,next) {
             message:"You have to first login!"
         })
     }
-    const isTokenBlackListed=await blackListModel.findOne({
-        token:token
-    });
+    const isTokenBlackListed=await redis.get(token);
     
     if(isTokenBlackListed){
         return res.status(403).json({
