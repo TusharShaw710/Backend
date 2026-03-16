@@ -3,7 +3,6 @@ const jwt=require("jsonwebtoken");
 
 async function tokenVerify(req,res,next){
     let token=req.cookies.token;
-    console.log(token);
     if(!token){
         return res.status(401).json({
             error:"No token provided."
