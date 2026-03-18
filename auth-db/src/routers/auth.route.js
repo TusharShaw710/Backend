@@ -3,8 +3,9 @@ const crypto=require("crypto");
 const userModel=require("../models/user.model");
 const authRouter=express.Router();
 const jwt=require("jsonwebtoken");
+const { registerValidation } = require("../validations/auth.validator");
 
-authRouter.post("/register",async (req,res)=>{
+authRouter.post("/register", registerValidation, async (req, res) => {
     let { name ,email,password}=req.body;
     let user=await userModel.findOne({email});
 
@@ -73,6 +74,8 @@ authRouter.post("/login",async (req,res)=>{
         message:"Logged in Successfully"
     });
 })
+
+
 
 
 module.exports=authRouter;
