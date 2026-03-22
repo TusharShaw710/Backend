@@ -1,11 +1,13 @@
 import express from 'express';
 import authRoutes from './routes/auth.routes.js';
 import { handleError } from './middlewares/error.middleware.js';
+import cookieParser from 'cookie-parser';
 
 const app = express();
 
 // Middleware
 app.use(express.json());
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
@@ -24,6 +26,6 @@ app.use((req, res) => {
 });
 
 // Global Error Handling Middleware (must be last)
-app.use(handleError);
+// app.use(handleError);
 
 export default app;
