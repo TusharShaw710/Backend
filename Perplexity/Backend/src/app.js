@@ -3,6 +3,7 @@ import authRoutes from './routes/auth.routes.js';
 import { handleError } from './middlewares/error.middleware.js';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import chatRoutes from './routes/chat.routes.js';
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.get('/', (req, res) => {
 
 // Auth routes
 app.use('/api/auth', authRoutes);
+app.use('/api/chats', chatRoutes);
 
 // 404 - Not Found Handler
 app.use((req, res) => {
