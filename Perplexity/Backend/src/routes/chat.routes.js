@@ -1,6 +1,6 @@
 import express from 'express';
 import { authenticateToken } from '../middlewares/auth.middleware.js';
-import { getChat, sendMessage,getMessage,getChatId } from '../controllers/chat.controller.js';
+import { getChat, sendMessage,getMessage,getChatId, getChatDelete } from '../controllers/chat.controller.js';
 
 const router=express.Router();
 
@@ -10,11 +10,29 @@ const router=express.Router();
  * @access Private
   */
 router.post("/messages",authenticateToken,sendMessage);
-
+/**
+ * @route GET /api/chats/get-chat/:chatId
+ * @desc Get a specific chat by ID
+ * @access Private
+ */
 router.get("/get-chat/:chatId",authenticateToken,getChat);
-
+/**
+ * @route GET /api/chats/get-messages/:chatId
+ * @desc Get messages for a specific chat
+ * @access Private
+ */
 router.get("/get-messages/:chatId",authenticateToken,getMessage);
-
+/**
+ * @route GET /api/chats/get-chat-id
+ * @desc Get chat ID for a user
+ * @access Private
+ */
 router.get("/get-chat-id",authenticateToken,getChatId);
+/** 
+ * @route GET /api/chats/delete-chat/:chatId
+ * @desc Delete a specific chat by ID
+ * @access Private
+ */
+router.get("/delete-chat/:chatId",authenticateToken,getChatDelete);
 
 export default router;

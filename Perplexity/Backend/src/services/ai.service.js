@@ -3,6 +3,9 @@ import { ChatMistralAI } from "@langchain/mistralai";
 import {HumanMessage,AIMessage} from "@langchain/core/messages";
 import {SystemMessage} from "@langchain/core/messages";
 import dotenv from 'dotenv';
+import { searchWeb } from "./internet.service.js";
+import { tool,createAgent } from "langchain";
+import * as z from "zod";
 
 dotenv.config();
 
@@ -16,18 +19,40 @@ const mistralModel = new ChatMistralAI({
   apiKey: process.env.MISTRAL_AI_API_KEY
 });
 
+const webSearchTool = tool(
+  searchWeb,
+  {
+    name: "web-search",
+    description: "Use this tool to search the web for up-to-date information. Input should be a search query string.",
+    schema: z.object({
+      query: z.string().describe("The search query string")
+    })
+  }
+);
+
+const agent=createAgent({
+  model:geminiModel,
+  tools:[webSearchTool],
+  agentOptions:{
+    agentType:"zero-shot-react-description"
+  }
+});
+
 async function getResponse(messages) {
   try {
-    const geminiResponse = await geminiModel.invoke(messages.map(msg=>{
-      if(msg.role==="user"){
+    const formattedMessages = messages.map(msg => {
+      if (msg.role === "user") {
         return new HumanMessage(msg.content);
-      }else{
+      } else {
         return new AIMessage(msg.content);
       }
-    }));
+    });
+
+    const geminiResponse = await geminiModel.invoke(formattedMessages);
     return geminiResponse.content;
   }catch(err){
-    console.error('Error invoking Gemini model:', err.message);
+    console.error('Error invoking Gemini model:', err);
+    throw new Error('Failed to get AI response: ' + err.message);
   }
 }
 

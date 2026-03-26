@@ -46,7 +46,7 @@ export const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-8 relative overflow-hidden"
          style={{
-           background: 'radial-gradient(circle at center, rgba(0, 255, 194, 0.05) 0%, rgba(10, 10, 12, 0) 70%), #0a0a0c'
+           background: 'linear-gradient(135deg, rgba(255, 0, 229, 0.08) 0%, rgba(13, 13, 18, 0) 50%), #0D0D12'
          }}>
       
       {/* Ambient background glow */}
@@ -72,7 +72,7 @@ export const Login = () => {
             <Link 
               to="/register" 
               className="transition duration-300 font-semibold hover:opacity-80"
-              style={{ color: '#00FFC2' }}
+              style={{ color: '#FF00E5' }}
             >
               Join the Network
             </Link>
