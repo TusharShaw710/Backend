@@ -39,41 +39,73 @@ export const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-8 relative overflow-hidden"
+    <div className="flex h-screen w-full relative overflow-hidden"
          style={{
-           background: 'linear-gradient(135deg, rgba(255, 0, 229, 0.08) 0%, rgba(13, 13, 18, 0) 50%), #0D0D12'
+           background: '#121212',
+           backgroundImage: `
+             radial-gradient(circle at 20% 50%, rgba(0, 255, 194, 0.15) 0%, transparent 50%),
+             radial-gradient(circle at 80% 50%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+             radial-gradient(circle at 100% 0%, rgba(236, 72, 153, 0.08) 0%, transparent 40%)
+           `
          }}>
       
-      {/* Ambient background glow */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full blur-3xl opacity-10"
-             style={{ background: '#00FFC2' }}></div>
+      {/* Cyberpunk Grid Effect - Full Screen */}
+      <div className="absolute inset-0 opacity-[0.02]"
+           style={{
+             backgroundImage: 'linear-gradient(0deg, transparent 24%, rgba(0, 255, 194, 0.05) 25%, rgba(0, 255, 194, 0.05) 26%, transparent 27%, transparent 74%, rgba(0, 255, 194, 0.05) 75%, rgba(0, 255, 194, 0.05) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(0, 255, 194, 0.05) 25%, rgba(0, 255, 194, 0.05) 26%, transparent 27%, transparent 74%, rgba(0, 255, 194, 0.05) 75%, rgba(0, 255, 194, 0.05) 76%, transparent 77%, transparent)',
+             backgroundSize: '50px 50px'
+           }}></div>
+
+      {/* Left Panel - CyberFlux Branding */}
+      <div className="hidden lg:flex flex-1 flex-col items-center justify-center px-8 relative z-10">
+        {/* Content */}
+        <div className="text-center max-w-md">
+
+          {/* Main Heading */}
+          <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-[#00FFC2] via-[#FF00E5] to-[#3D5AFE] bg-clip-text text-transparent">
+            CyberFlux
+          </h1>
+
+          {/* Subtitle */}
+          <p className="text-gray-400 text-base tracking-wide">
+            Synthesizing chaos into <span className="text-[#00FFC2]">intelligence</span> ⚡
+          </p>
+
+          {/* Decorative Lines */}
+          <div className="mt-12 space-y-2">
+            <div className="h-px bg-gradient-to-r from-transparent via-[#00FFC2] to-transparent opacity-30"></div>
+            <div className="h-px bg-gradient-to-r from-transparent via-[#8B5CF6] to-transparent opacity-20"></div>
+          </div>
+        </div>
       </div>
 
-      {/* Form Component */}
-      <DynamicForm
-        fields={registerFields}
-        onSubmit={handleRegisterSubmit}
-        buttonText="Initialize"
-        heading={
-          <>
-           <span style={{color:"#FFFFFF"}}>ESTABLISH</span> <span style={{ color: '#00FFC2' }}>Node</span>
-          </>
-        }
-        subtitle="Create your secure credentials."
-        toggleLink={{
-          text: "Already on the grid?",
-          linkComponent: (
-            <Link 
-              to="/login" 
-              className="transition duration-300 font-semibold hover:opacity-80"
-              style={{ color: '#FF00E5' }}
-            >
-              Access System
-            </Link>
-          ),
-        }}
-      />
+      {/* Right Panel - Auth Component */}
+      <div className="w-full lg:flex-1 h-screen flex items-center justify-center px-4 py-8 relative z-10">
+        {/* Form Component */}
+        <DynamicForm
+          fields={registerFields}
+          onSubmit={handleRegisterSubmit}
+          buttonText="Initialize"
+          heading={
+            <>
+             <span style={{color:"#FFFFFF"}}>ESTABLISH</span> <span style={{ color: '#00FFC2' }}>Node</span>
+            </>
+          }
+          subtitle="Create your secure credentials."
+          toggleLink={{
+            text: "Already on the grid?",
+            linkComponent: (
+              <Link 
+                to="/login" 
+                className="transition duration-300 font-semibold hover:opacity-80"
+                style={{ color: '#FF00E5' }}
+              >
+                Access System
+              </Link>
+            ),
+          }}
+        />
+      </div>
     </div>
   )
 }

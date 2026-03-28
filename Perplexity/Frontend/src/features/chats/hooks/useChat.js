@@ -15,7 +15,8 @@ const useChat=()=>{
             if(!chatId){
                 dispatch(createNewChat({
                     chatId:chat._id,
-                    title:chat.title
+                    title:chat.title,
+                    updatedAt:chat.updatedAt
                 }));
                 chatId = chat._id;
             }
@@ -50,7 +51,7 @@ const useChat=()=>{
                 id:chat._id,
                 title:chat.title,
                 messages:[],
-                lastUpdated:chat.lastUpdated
+                updatedAt:chat.updatedAt
             };
             return acc;
           },{});

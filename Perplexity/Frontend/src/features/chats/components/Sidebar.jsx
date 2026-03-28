@@ -1,17 +1,24 @@
 import React from 'react'
 import { Plus,Folder } from 'lucide-react'
 import { UserProfile } from './UserProfile'
-import { useSelector } from 'react-redux'
+import { useSelector,useDispatch } from 'react-redux'
+import { setCurrentChatId } from '../chat.slice'
 import useChat from '../hooks/useChat';
 
 
 export const Sidebar = () => {
     const chats=useSelector((state)=>state.chat.chats);
+    const dispatch=useDispatch();
     const {openChat}=useChat();
-    const recentClusters=Object.values(chats)
-        .sort((a,b)=>new Date(b.lastUpdated)-new Date(a.lastUpdated))
-        .slice(0,5);
-    console.log(recentClusters);
+    
+    const recentClusters = chats ? Object.values(chats)
+        .filter(chat => chat && chat.updatedAt) // Use updatedAt from MongoDB timestamps
+        .sort((a,b)=>new Date(b.updatedAt)-new Date(a.updatedAt))
+        .slice(0,5)
+        : [];
+    
+    console.log("All chats:", chats);
+    console.log("Recent clusters:", recentClusters);
 
   return (
     <div className="w-64 bg-black backdrop-blur-xl border-r border-white/10 flex flex-col h-screen">
@@ -28,8 +35,10 @@ export const Sidebar = () => {
         </div>
 
         {/* New Chat Button */}
-        <button className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-linear-to-r from-[#00FFC2] to-[#3D5AFE] text-black font-semibold text-sm hover:shadow-lg hover:shadow-[#00FFC2]/50 transition-all duration-300 group">
-          <Plus size={18} className="group-hover:rotate-90 transition-transform duration-300" />
+        <button onClick={()=>{
+          dispatch(setCurrentChatId(null));
+        }} className="w-full flex items-center border-l-3 border-l-[#00FFC2]  gap-2 py-3 px-4 rounded-b-sm  text-white font-semibold text-sm hover:shadow-lg hover:shadow-[#00FFC2]/50 transition-all duration-300 group hover:text-[#00FFC2]">
+          <Plus size={18} className="group-hover:rotate-90 transition-transform duration-300 hover:text-[#00FFC2]" />
           New Chat
         </button>
       </div>

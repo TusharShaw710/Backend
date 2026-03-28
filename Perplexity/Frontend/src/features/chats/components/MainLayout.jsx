@@ -67,25 +67,6 @@ export const MainLayout = ({ onMenuClick }) => {
               <p className="text-sm md:text-base text-gray-400 tracking-wider mb-12 opacity-70">
                 CyberFlux-0.1 Active
               </p>
-
-              {/* Featured Prompts */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-12">
-                {[
-                  'Explain complex concepts',
-                  'Generate creative content',
-                  'Analyze data & insights',
-                  'Code & technical help'
-                ].map((prompt, idx) => (
-                  <button
-                    key={idx}
-                    className="p-4 rounded-xl bg-white/5 backdrop-blur-lg border border-white/10 hover:border-[#00FFC2]/50 hover:bg-white/10 transition-all duration-300 text-left group"
-                  >
-                    <p className="text-gray-300 group-hover:text-white transition-colors duration-300">
-                      {prompt}
-                    </p>
-                  </button>
-                ))}
-              </div>
             </div>
           </div>
         ) : (

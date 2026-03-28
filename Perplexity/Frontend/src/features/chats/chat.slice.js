@@ -17,20 +17,20 @@ const chatSlice=createSlice({
                 id:chatId,
                 title:title,
                 messages:[],
-                lastUpdated:Date.now().toString()
+                updatedAt:new Date().toISOString()
             }
         },
         addNewMessage:(state,action)=>{
             const {chatId,message,role}=action.payload;
             state.chats[chatId].messages.push({text:message,role:role});
-            state.chats[chatId].lastUpdated=Date.now().toString();
+            state.chats[chatId].updatedAt=new Date().toISOString();
             
         },
         addMessages:(state,action)=>{
             const {chatId,messages}=action.payload;
             if(state.chats[chatId]){
                 state.chats[chatId].messages.push(...messages);
-                state.chats[chatId].lastUpdated=Date.now().toString();
+                state.chats[chatId].updatedAt=new Date().toISOString();
             }
         },
         setChats:(state,action)=>{
