@@ -9,14 +9,16 @@ import * as z from "zod";
 
 dotenv.config();
 
-const geminiModel = new ChatGoogleGenerativeAI({
-  model: "gemini-2.5-flash-lite",
-  apiKey: process.env.GEMINI_API_KEY
+const geminiModel = new ChatMistralAI({
+  model: "mistral-small-latest",
+  apiKey: process.env.MISTRAL_AI_API_KEY,
+  streaming: true
 });
 
 const mistralModel = new ChatMistralAI({
   model: "mistral-small-latest",
-  apiKey: process.env.MISTRAL_AI_API_KEY
+  apiKey: process.env.MISTRAL_AI_API_KEY,
+  streaming: true
 });
 
 const searchInternetTool = tool(
@@ -63,6 +65,63 @@ async function getResponse(messages) {
   }
 }
 
+// Streaming version with callback for token handling
+async function getResponseStream(messages, onToken) {
+  try {
+    const formattedMessages = messages.map(msg => {
+      if (msg.role === "user") {
+        return new HumanMessage(msg.content);
+      } else {
+        return new AIMessage(msg.content);
+      }
+    });
+
+    // Use invoke instead of stream since agent with tools needs to execute sequentially
+    const agentResponse = await agent.invoke({
+      messages: [
+        new SystemMessage(`You are an AI assistant.
+                            RULES:
+                            - If the question involves current events, latest info, or unknown facts → MUST use the "searchInternet" tool.
+                            - Do NOT guess.
+                            - Always prefer tool over assumptions.
+`),
+        ...formattedMessages
+      ]
+    });
+
+    // Extract the response content
+    let fullResponse = '';
+    
+    if (agentResponse.messages && agentResponse.messages.length > 0) {
+      // Get the last message (AI response)
+      const lastMessage = agentResponse.messages[agentResponse.messages.length - 1];
+      fullResponse = lastMessage.content || '';
+    } else if (typeof agentResponse === 'string') {
+      fullResponse = agentResponse;
+    } else if (agentResponse.content) {
+      fullResponse = agentResponse.content;
+    } else if (agentResponse.output) {
+      fullResponse = agentResponse.output;
+    }
+
+    // Guard: ensure fullResponse is not empty
+    if (!fullResponse || !fullResponse.trim()) {
+      fullResponse = "I couldn't process your request. Please try again.";
+    }
+
+    // Emit the complete response as a single token
+    // This avoids duplication of the message
+    if (onToken) {
+      onToken(fullResponse);
+    }
+
+    return fullResponse;
+  } catch (err) {
+    console.error('Error invoking streaming agent:', err);
+    throw new Error('Failed to get AI response: ' + err.message);
+  }
+}
+
 async function getChatTitle(message) {
   try {
     const mistralResponse = await mistralModel.invoke([
@@ -78,4 +137,4 @@ async function getChatTitle(message) {
   
 }
 
-export { getResponse,getChatTitle };
+export { getResponse, getResponseStream, getChatTitle };

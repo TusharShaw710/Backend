@@ -1,5 +1,5 @@
 import React from 'react'
-import { Plus,Folder } from 'lucide-react'
+import { Plus,Folder,X } from 'lucide-react'
 import { UserProfile } from './UserProfile'
 import { useSelector,useDispatch } from 'react-redux'
 import { setCurrentChatId } from '../chat.slice'
@@ -9,13 +9,19 @@ import useChat from '../hooks/useChat';
 export const Sidebar = () => {
     const chats=useSelector((state)=>state.chat.chats);
     const dispatch=useDispatch();
-    const {openChat}=useChat();
+    const {openChat,handleDeleteChat,handleGetChat}=useChat();
     
     const recentClusters = chats ? Object.values(chats)
         .filter(chat => chat && chat.updatedAt) // Use updatedAt from MongoDB timestamps
         .sort((a,b)=>new Date(b.updatedAt)-new Date(a.updatedAt))
         .slice(0,5)
         : [];
+    
+    const onDeleteClick=(chatId)=>{
+      handleDeleteChat(chatId);
+      handleGetChat();
+    }
+      
     
     console.log("All chats:", chats);
     console.log("Recent clusters:", recentClusters);
@@ -53,9 +59,17 @@ export const Sidebar = () => {
             {/* Cluster Items */}
             <div className="space-y-2">
                 {recentClusters.map((cluster) => (
-                  <div key={cluster.id} onClick={()=>{openChat(cluster.id,chats)}} className="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer bg-transparent hover:bg-white/5 text-gray-400 hover:text-white transition-all duration-200 group">
-                    <Folder size={16} className="group-hover:text-[#00FFC2] transition-colors duration-200" />
-                    <span  className="text-sm font-medium">{cluster.title}</span>
+                  <div key={cluster.id} onClick={()=>{openChat(cluster.id,chats)}} className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer bg-transparent hover:bg-white/5 text-gray-400 hover:text-white transition-all duration-200 group">
+                    <div className="flex items-center gap-3 flex-1">
+                      <Folder size={16} className="group-hover:text-[#00FFC2] transition-colors duration-200" />
+                      <span className="text-sm font-medium">{cluster.title}</span>
+                    </div>
+                    <button 
+                      className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-1 hover:bg-red-500/20 rounded hover:text-red-400 ml-2"
+                      title="Delete cluster"
+                    >
+                      <X onClick={() => onDeleteClick(cluster.id)} size={16} />
+                    </button>
                   </div>
                 ))}
             </div>

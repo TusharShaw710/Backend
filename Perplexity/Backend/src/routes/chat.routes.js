@@ -1,6 +1,6 @@
 import express from 'express';
 import { authenticateToken } from '../middlewares/auth.middleware.js';
-import { getChat, sendMessage,getMessage,getChatId, getChatDelete } from '../controllers/chat.controller.js';
+import { getChat, sendMessage, sendMessageStream, getMessage, getChatId, getChatDelete } from '../controllers/chat.controller.js';
 
 const router=express.Router();
 
@@ -10,6 +10,12 @@ const router=express.Router();
  * @access Private
   */
 router.post("/messages",authenticateToken,sendMessage);
+/**
+ * @route POST /api/chats/messages-stream
+ * @desc Stream AI response for a user message (Server-Sent Events)
+ * @access Private
+ */
+router.post("/messages-stream",authenticateToken,sendMessageStream);
 /**
  * @route GET /api/chats/get-chat/:chatId
  * @desc Get a specific chat by ID

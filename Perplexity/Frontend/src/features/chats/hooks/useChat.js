@@ -1,7 +1,7 @@
 import { initClient } from "../services/chat.socket";
-import { sendMessage,getMessage,getChat,getChatId,deleteChat } from "../services/chat.api";
+import { sendMessage, sendMessageStream, getMessage, getChat, getChatId, deleteChat } from "../services/chat.api";
 import { useDispatch } from "react-redux";
-import { setLoading,setChats,setCurrentChatId,setError,createNewChat,addNewMessage,addMessages } from "../chat.slice";
+import { setLoading, setChats, setCurrentChatId, setError, createNewChat, addNewMessage, addMessages, setThinking, addStreamingToken, clearStreamingMessage } from "../chat.slice";
 
 const useChat=()=>{
     const dispatch=useDispatch();
@@ -38,6 +38,78 @@ const useChat=()=>{
             dispatch(setError("Failed to send message. Please try again."));
         }finally{
             dispatch(setLoading(false));
+        }
+    }
+
+    async function handleSendMessageStream(message, chatId) {
+        dispatch(setThinking(true));
+        let streamStarted = false;
+        let finalChatId = chatId;
+        let fullResponseMessage = '';
+        let messageAdded = false;
+
+        try {
+            sendMessageStream(
+                message,
+                chatId,
+                (token) => {
+                    // Handle different token types
+                    if (typeof token === 'object' && token.type === 'chat_info') {
+                        // Chat info received
+                        finalChatId = token.chatId || chatId;
+                        
+                        // Create new chat first if this was a first message
+                        if (!chatId) {
+                            dispatch(createNewChat({
+                                chatId: finalChatId,
+                                title: token.title,
+                                updatedAt: new Date().toISOString()
+                            }));
+                            dispatch(setCurrentChatId(finalChatId));
+                        }
+                        
+                        // Add user message after chat is created
+                        if (!streamStarted) {
+                            dispatch(addNewMessage({
+                                chatId: finalChatId,
+                                message: message,
+                                role: "user"
+                            }));
+                            streamStarted = true;
+                        }
+                    } else if (typeof token === 'string') {
+                        // Accumulate the full response
+                        fullResponseMessage += token;
+                        
+                        // Transition from thinking to streaming on first token
+                        dispatch(setThinking(false));
+                        dispatch(addStreamingToken(token));
+                    }
+                },
+                (completeData) => {
+                    // Stream completed - clear streaming first, then add to messages
+                    dispatch(clearStreamingMessage());
+                    
+                    // Only add message if it hasn't been added yet and has content
+                    if (!messageAdded && fullResponseMessage.trim()) {
+                        dispatch(addNewMessage({
+                            chatId: finalChatId,
+                            message: fullResponseMessage,
+                            role: "ai"
+                        }));
+                        messageAdded = true;
+                    }
+                },
+                (error) => {
+                    console.error('Stream error:', error);
+                    dispatch(setError("Failed to stream message. Please try again."));
+                    dispatch(clearStreamingMessage());
+                }
+            );
+        } catch (err) {
+            console.log(err);
+            dispatch(setError("Failed to send message. Please try again."));
+            dispatch(clearStreamingMessage());
         }
     }
 
@@ -90,7 +162,16 @@ const useChat=()=>{
         }
     }
 
-    return { handleSendMessage,initClient,handleGetChat,openChat }
+    async function handleDeleteChat(chatId){
+        try {
+            await deleteChat(chatId);
+        } catch (error) {
+            console.error("Error deleting chat:", error);
+        }
+    }
+
+
+    return { handleSendMessage, handleSendMessageStream, initClient, handleGetChat, openChat, handleDeleteChat };
 }
 
 export default useChat;

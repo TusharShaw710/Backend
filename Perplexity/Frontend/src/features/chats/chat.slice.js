@@ -8,7 +8,10 @@ const chatSlice=createSlice({
         chats: {},
         currentChatId: null,
         isloading:false,
-        error:null
+        error:null,
+        isThinking: false,
+        streamingMessage: '',
+        streamingMessageRole: 'ai'
     },
     reducers:{
         createNewChat:(state,action)=>{
@@ -22,9 +25,18 @@ const chatSlice=createSlice({
         },
         addNewMessage:(state,action)=>{
             const {chatId,message,role}=action.payload;
-            state.chats[chatId].messages.push({text:message,role:role});
-            state.chats[chatId].updatedAt=new Date().toISOString();
-            
+            // Guard: only add message if chat exists
+            if(state.chats[chatId]){
+                // Prevent duplicate messages - check if last message has same content
+                const messages = state.chats[chatId].messages;
+                const lastMessage = messages.length > 0 ? messages[messages.length - 1] : null;
+                
+                // Don't add if it's a duplicate of the last message (same role and content)
+                if (!lastMessage || lastMessage.role !== role || lastMessage.text !== message) {
+                    state.chats[chatId].messages.push({text:message,role:role});
+                    state.chats[chatId].updatedAt=new Date().toISOString();
+                }
+            }
         },
         addMessages:(state,action)=>{
             const {chatId,messages}=action.payload;
@@ -44,10 +56,23 @@ const chatSlice=createSlice({
         },
         setError:(state,action)=>{
             state.error=action.payload;
+        },
+        setThinking:(state,action)=>{
+            state.isThinking=action.payload;
+        },
+        setStreamingMessage:(state,action)=>{
+            state.streamingMessage=action.payload;
+        },
+        addStreamingToken:(state,action)=>{
+            state.streamingMessage+=action.payload;
+        },
+        clearStreamingMessage:(state)=>{
+            state.streamingMessage='';
+            state.isThinking=false;
         }
     }
 })
 
-export const {setChats,setCurrentChatId,setLoading,setError,createNewChat,addNewMessage,addMessages}=chatSlice.actions;
+export const {setChats,setCurrentChatId,setLoading,setError,createNewChat,addNewMessage,addMessages,setThinking,setStreamingMessage,addStreamingToken,clearStreamingMessage}=chatSlice.actions;
 
 export default chatSlice.reducer;

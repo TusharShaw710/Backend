@@ -6,11 +6,11 @@ import useChat from '../hooks/useChat.js'
 export const ChatInput = () => {
   const [message, setMessage] = useState('');
   const currentChatId=useSelector((state)=>state.chat.currentChatId);
-  const {handleSendMessage}=useChat();
+  const {handleSendMessageStream}=useChat();
 
   const handleSend = () => {
     if (message.trim()) {
-      handleSendMessage(message, currentChatId);
+      handleSendMessageStream(message, currentChatId);
       setMessage('')
     }
   }

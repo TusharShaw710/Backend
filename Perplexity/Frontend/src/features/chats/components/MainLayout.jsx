@@ -1,35 +1,38 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { ChatHeader } from './ChatHeader'
 import { MessageBubble } from './MessageBubble'
 import { ChatInput } from './ChatInput'
 import { useSelector } from 'react-redux'
 
 export const MainLayout = ({ onMenuClick }) => {
-  // const [messages, setMessages] = useState([
-  //   {
-  //     id: 1,
-  //     text: 'Help me understand quantum computing principles',
-  //     isUser: true
-  //   },
-  //   {
-  //     id: 2,
-  //     text: 'Quantum computing harnesses quantum mechanics principles:\n\n1. Quantum Superposition - Qubits exist in multiple states simultaneously\n2. Quantum Entanglement - Qubits are interconnected, affecting each other instantly\n3. Quantum Interference - Amplifies correct answers while canceling incorrect ones',
-  //     isUser: false
-  //   },
-  //   {
-  //     id: 3,
-  //     text: 'What are practical applications?',
-  //     isUser: true
-  //   },
-  //   {
-  //     id: 4,
-  //     text: 'Quantum computers have transformative applications:\n\n1. Drug Discovery - Simulating molecular interactions at quantum scale\n2. Cryptography - Breaking traditional encryption and creating quantum-secure systems\n3. Optimization - Solving complex logistics and financial modeling problems\n4. AI & Machine Learning - Accelerating neural network training exponentially',
-  //     isUser: false
-  //   }
-  // ])
+  const [dots, setDots] = useState('.');
+  const messagesEndRef = useRef(null);
 
   const chats=useSelector((state)=>state.chat.chats);
   const currentChatId=useSelector((state)=>state.chat.currentChatId);
+  const isThinking=useSelector((state)=>state.chat.isThinking);
+  const streamingMessage=useSelector((state)=>state.chat.streamingMessage);
+
+  // Animate thinking dots
+  useEffect(() => {
+    if (isThinking) {
+      const interval = setInterval(() => {
+        setDots(prev => {
+          if (prev === '.') return '..';
+          if (prev === '..') return '...';
+          return '.';
+        });
+      }, 500);
+      return () => clearInterval(interval);
+    }
+  }, [isThinking]);
+
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [chats[currentChatId]?.messages, isThinking, streamingMessage]);
 
   return (
     <div className="flex-1 flex flex-col h-screen relative overflow-hidden" style={{
@@ -75,6 +78,34 @@ export const MainLayout = ({ onMenuClick }) => {
             {chats[currentChatId]?.messages.map((msg) => (
               <MessageBubble key={msg._id} message={msg.text} role={msg.role} />
             ))}
+            
+            {/* Thinking State */}
+            {isThinking && (
+              <div className="flex justify-start">
+                <div className="px-6 py-4 rounded-2xl bg-black/40 backdrop-blur-lg border border-[#00FFC2]/50 shadow-lg shadow-[#00FFC2]/20 animate-pulse">
+                  <div className="flex items-center gap-2">
+                    <div className="flex gap-1">
+                      <span className="w-2 h-2 bg-[#00FFC2] rounded-full animate-bounce" style={{animationDelay: '0s'}} />
+                      <span className="w-2 h-2 bg-[#00FFC2] rounded-full animate-bounce" style={{animationDelay: '0.2s'}} />
+                      <span className="w-2 h-2 bg-[#00FFC2] rounded-full animate-bounce" style={{animationDelay: '0.4s'}} />
+                    </div>
+                    <span className="text-sm text-gray-400">Thinking{dots}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Streaming Message */}
+            {streamingMessage && (
+              <MessageBubble 
+                key="streaming-message"
+                message={streamingMessage} 
+                role="ai" 
+                isStreaming={true}
+              />
+            )}
+            
+            <div ref={messagesEndRef} />
           </div>
         )}
       </div>
